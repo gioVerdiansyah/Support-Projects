@@ -6,3 +6,4 @@ pub mod create_repository;
 pub mod create_repository_impl;
 pub mod create_screen;
 pub mod create_state;
+pub mod update_di;

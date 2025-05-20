@@ -1,6 +1,6 @@
 use std::io;
 use std::path::PathBuf;
-use Flutter::utils::create_file::create_file_content;
+use Flutter::utils::files::create_file_content;
 use Flutter::utils::global_args::get_args;
 use Flutter::utils::string::capitalize_first_letter;
 
@@ -8,6 +8,7 @@ pub fn create_screen() -> io::Result<()> {
     let args = get_args();
     let feature_name = args.get(0).cloned().unwrap_or_default();
     let package_name = args.get(1).cloned().unwrap_or_default();
+    let name = args.get(2).cloned().unwrap_or_else(|| feature_name.clone());
 
     let content = &format!(r#"
 import 'package:flutter/material.dart';
@@ -38,15 +39,15 @@ class _{0}State extends State<{0}Screen> {{
     Widget build(BuildContext context) {{
         return Scaffold(
             backgroundColor: ColorConstant.primary,
-            child: Center(
+            body: Center(
                 child: Text("Hello {0} Screen")
             )
         );
     }}
-}}"#, capitalize_first_letter(&*feature_name), package_name);
+}}"#, capitalize_first_letter(&*name), package_name);
 
     let file_path = PathBuf::from(format!("lib\\src\\features\\{}\\presentations\\screens", feature_name.to_lowercase()))
-        .join(&format!("{}_screen.dart", feature_name.to_lowercase()));
+        .join(&format!("{}_screen.dart", name.to_lowercase()));
 
     // Ensure parent directory exists
     if let Some(parent) = file_path.parent() {

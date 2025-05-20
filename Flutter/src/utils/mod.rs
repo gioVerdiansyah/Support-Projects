@@ -1,4 +1,4 @@
-pub mod create_folder;
-pub mod create_file;
+pub mod folders;
+pub mod files;
 pub mod global_args;
 pub mod string;

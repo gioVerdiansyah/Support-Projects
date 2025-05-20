@@ -26,17 +26,31 @@ fn main() {
         .find(|arg| arg.starts_with("--only="))
         .map(|s| s.trim_start_matches("--only=").to_string());
 
+    // Parsing --only
+    let binding = only_param.clone();
+    let only_modules: Option<Vec<&str>> = binding
+        .as_ref()
+        .map(|s| s.split(',').map(|x| x.trim()).filter(|x| !x.is_empty()).collect());
+
+    let name = args.iter()
+        .find(|arg| arg.starts_with("--name="))
+        .map(|s| s.trim_start_matches("--name=").to_string());
+
+    let (_, name) = match (only_param, name) {
+        (Some(only), Some(name)) => (only, name),
+        _ => {
+            eprintln!("Error: Parameter '--only=' and '--name=' must be added!");
+            std::process::exit(1);
+        }
+    };
+
     let cleaned_args = vec![
         feature_name.to_string(),
         package_name.clone().unwrap(),
+        name
     ];
 
     set_args(&cleaned_args);
-
-    // Parsing --only
-    let only_modules: Option<Vec<&str>> = only_param
-        .as_ref()
-        .map(|s| s.split(',').map(|x| x.trim()).filter(|x| !x.is_empty()).collect());
 
     match create_contents(only_modules){
         Ok(_) => println!("Successfully create features!"),
