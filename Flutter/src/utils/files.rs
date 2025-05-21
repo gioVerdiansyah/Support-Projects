@@ -37,3 +37,37 @@ pub fn insert_content_to_file<P: AsRef<Path>>(
         ))
     }
 }
+
+pub fn replace_line_with_prefix<P: AsRef<Path>>(
+    file_path: P,
+    prefix: &str,
+    new_line: &str,
+) -> io::Result<()> {
+    let content = fs::read_to_string(&file_path)?;
+    let mut found = false;
+
+    let updated_content = content
+        .lines()
+        .map(|line| {
+            if line.trim_start().starts_with(prefix) {
+                found = true;
+                new_line.to_string()
+            } else {
+                line.to_string()
+            }
+        })
+        .collect::<Vec<_>>()
+        .join("\n");
+
+    if !found {
+        return Err(Error::new(
+            ErrorKind::NotFound,
+            format!("Prefix '{}' not found in file {:?}", prefix, file_path.as_ref()),
+        ));
+    }
+
+    let mut file = fs::File::create(&file_path)?;
+    file.write_all(updated_content.as_bytes())?;
+
+    Ok(())
+}

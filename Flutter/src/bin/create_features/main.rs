@@ -36,13 +36,12 @@ fn main() {
         .find(|arg| arg.starts_with("--name="))
         .map(|s| s.trim_start_matches("--name=").to_string());
 
-    let (_, name) = match (only_param, name) {
-        (Some(only), Some(name)) => (only, name),
-        _ => {
-            eprintln!("Error: Parameter '--only=' and '--name=' must be added!");
-            std::process::exit(1);
-        }
-    };
+    if only_param.is_some() ^ name.is_some() {
+        eprintln!("Error: '--only=' and '--name=' must be used together!");
+        std::process::exit(1);
+    }
+
+    let name = name.unwrap_or_default();
 
     let cleaned_args = vec![
         feature_name.to_string(),
