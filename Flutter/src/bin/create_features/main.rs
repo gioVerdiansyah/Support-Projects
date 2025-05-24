@@ -43,11 +43,18 @@ fn main() {
 
     let name = name.unwrap_or_default();
 
-    let cleaned_args = vec![
-        feature_name.to_string(),
-        package_name.clone().unwrap(),
-        name
-    ];
+    let cleaned_args = if name.is_empty() {
+        vec![
+            feature_name.to_string(),
+            package_name.clone().unwrap(),
+        ]
+    } else {
+        vec![
+            feature_name.to_string(),
+            package_name.clone().unwrap(),
+            name
+        ]
+    };
 
     set_args(&cleaned_args);
 
